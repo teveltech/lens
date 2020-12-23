@@ -16,11 +16,11 @@ import { Filter, FilterType, pageFilters } from "./page-filters.store";
 import { PageFiltersList } from "./page-filters-list";
 import { PageFiltersSelect } from "./page-filters-select";
 import { NamespaceSelectFilter } from "../+namespaces/namespace-select-filter";
-import { themeStore } from "../../theme.store";
+import { ThemeStore } from "../../theme.store";
 import { MenuActions } from "../menu/menu-actions";
 import { MenuItem } from "../menu";
 import { Checkbox } from "../checkbox";
-import { userStore } from "../../../common/user-store";
+import { UserStore } from "../../../common/user-store";
 import { namespaceStore } from "../+namespaces/namespace.store";
 
 // todo: refactor, split to small re-usable components
@@ -447,7 +447,7 @@ export class ItemListLayout extends React.Component<ItemListLayoutProps> {
             noItems={this.renderNoItems()}
             {...({
               ...tableProps,
-              className: cssNames("box grow", tableProps.className, themeStore.activeTheme.type),
+              className: cssNames("box grow", tableProps.className, ThemeStore.getInstance().activeTheme.type),
             })}
           >
             {this.renderTableHeader()}
@@ -467,7 +467,7 @@ export class ItemListLayout extends React.Component<ItemListLayoutProps> {
   }
 
   @computed get hiddenColumns() {
-    return userStore.getHiddenTableColumns(this.props.tableId);
+    return UserStore.getInstance().getHiddenTableColumns(this.props.tableId);
   }
 
   isHiddenColumn({ id: columnId, showWithColumn }: TableCellProps): boolean {
@@ -489,7 +489,7 @@ export class ItemListLayout extends React.Component<ItemListLayoutProps> {
       hiddenColumns.delete(columnId);
     }
 
-    userStore.setHiddenTableColumns(this.props.tableId, hiddenColumns);
+    UserStore.getInstance().setHiddenTableColumns(this.props.tableId, hiddenColumns);
   }
 
   renderColumnVisibilityMenu() {

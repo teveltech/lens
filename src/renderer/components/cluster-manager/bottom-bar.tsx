@@ -3,7 +3,7 @@ import "./bottom-bar.scss";
 import React from "react";
 import { observer } from "mobx-react";
 import { Icon } from "../icon";
-import { workspaceStore } from "../../../common/workspace-store";
+import { WorkspaceStore } from "../../../common/workspace-store";
 import { StatusBarRegistration, statusBarRegistry } from "../../../extensions/registries";
 import { CommandOverlay } from "../command-palette/command-container";
 import { ChooseWorkspace } from "../+workspaces";
@@ -45,7 +45,7 @@ export class BottomBar extends React.Component {
   }
 
   render() {
-    const { currentWorkspace } = workspaceStore;
+    const { currentWorkspace } = WorkspaceStore.getInstance();
 
     return (
       <div className="BottomBar flex gaps">

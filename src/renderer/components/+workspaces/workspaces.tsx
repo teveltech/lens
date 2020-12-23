@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react";
 import { computed} from "mobx";
-import { WorkspaceStore, workspaceStore } from "../../../common/workspace-store";
+import { WorkspaceStore } from "../../../common/workspace-store";
 import { commandRegistry } from "../../../extensions/registries/command-registry";
 import { Select } from "../select";
 import { navigate } from "../../navigation";
@@ -19,7 +19,7 @@ export class ChooseWorkspace extends React.Component {
   private static editActionId = "__edit__";
 
   @computed get options() {
-    const options = workspaceStore.enabledWorkspacesList.map((workspace) => {
+    const options = WorkspaceStore.getInstance().enabledWorkspacesList.map((workspace) => {
       return { value: workspace.id, label: workspace.name };
     });
 
@@ -28,7 +28,7 @@ export class ChooseWorkspace extends React.Component {
     if (options.length > 1) {
       options.push({ value: ChooseWorkspace.removeActionId, label: "Remove workspace ..." });
 
-      if (workspaceStore.currentWorkspace.id !== WorkspaceStore.defaultId) {
+      if (WorkspaceStore.getInstance().currentWorkspace.id !== WorkspaceStore.defaultId) {
         options.push({ value: ChooseWorkspace.editActionId, label: "Edit current workspace ..." });
       }
     }
@@ -55,8 +55,8 @@ export class ChooseWorkspace extends React.Component {
       return;
     }
 
-    workspaceStore.setActive(id);
-    const clusterId = workspaceStore.getById(id).lastActiveClusterId;
+    WorkspaceStore.getInstance().setActive(id);
+    const clusterId = WorkspaceStore.getInstance().getById(id).lastActiveClusterId;
 
     if (clusterId) {
       navigate(clusterViewURL({ params: { clusterId } }));
