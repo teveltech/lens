@@ -63,10 +63,10 @@ class HelmService {
     return await releaseManager.getRelease(releaseName, namespace, cluster);
   }
 
-  public async getReleaseValues(cluster: Cluster, releaseName: string, namespace: string) {
+  public async getReleaseValues(cluster: Cluster, releaseName: string, namespace: string, all: boolean) {
     logger.debug("Fetch release values");
 
-    return await releaseManager.getValues(releaseName, namespace, cluster.getProxyKubeconfigPath());
+    return await releaseManager.getValues(releaseName, namespace, all, cluster.getProxyKubeconfigPath());
   }
 
   public async getReleaseHistory(cluster: Cluster, releaseName: string, namespace: string) {
