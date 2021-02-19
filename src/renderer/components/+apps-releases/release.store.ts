@@ -6,11 +6,19 @@ import { ItemStore } from "../../item.store";
 import { Secret } from "../../api/endpoints";
 import { secretsStore } from "../+config-secrets/secrets.store";
 import { namespaceStore } from "../+namespaces/namespace.store";
+import { ClusterContext } from "../context";
 
 @autobind()
 export class ReleaseStore extends ItemStore<HelmRelease> {
+  @observable static defaultContext: ClusterContext; // TODO: support multiple cluster contexts
   @observable releaseSecrets: Secret[] = [];
   @observable secretWatcher: IReactionDisposer;
+
+  contextReady = when(() => Boolean(this.context));
+
+  get context(): ClusterContext {
+    return ReleaseStore.defaultContext;
+  }
 
   constructor() {
     super();
@@ -74,14 +82,13 @@ export class ReleaseStore extends ItemStore<HelmRelease> {
   }
 
   async loadFromContextNamespaces(): Promise<void> {
-    return this.loadAll(namespaceStore.contextNamespaces);
+    return this.loadAll(namespaceStore.selectedNamespaces);
   }
 
   async loadItems(namespaces: string[]) {
-    const isLoadingAll = namespaceStore.allowedNamespaces.every(ns => namespaces.includes(ns));
-    const noAccessibleNamespaces = namespaceStore.context.cluster.accessibleNamespaces.length === 0;
+    await this.contextReady;
 
-    if (isLoadingAll && noAccessibleNamespaces) {
+    if (this.context.isAllPossibleNamespaces(namespaces)) {
       return helmReleasesApi.list();
     } else {
       return Promise
