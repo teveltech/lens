@@ -17,7 +17,7 @@ import { clusterSettingsURL } from "../+cluster-settings";
 import { landingURL } from "../+landing-page";
 import { ConfirmDialog } from "../confirm-dialog";
 import { clusterViewURL } from "./cluster-view.route";
-import { getExtensionPageUrl, globalPageMenuRegistry, globalPageRegistry } from "../../../extensions/registries";
+import { getByPageTarget, getExtensionPageUrl, getGlobalPageMenus, RegistrationScope } from "../../../extensions/registries";
 import { clusterDisconnectHandler } from "../../../common/cluster-ipc";
 import { commandRegistry } from "../../../extensions/registries/command-registry";
 import { CommandOverlay } from "../command-palette/command-container";
@@ -165,8 +165,8 @@ export class ClustersMenu extends React.Component<Props> {
           </Menu>
         </div>
         <div className="extensions">
-          {globalPageMenuRegistry.getItems().map(({ title, target, components: { Icon } }) => {
-            const registeredPage = globalPageRegistry.getByPageTarget(target);
+          {getGlobalPageMenus().map(({ title, target, components: { Icon } }) => {
+            const registeredPage = getByPageTarget(target, new Set([RegistrationScope.GLOBAL]));
 
             if (!registeredPage){
               return;
