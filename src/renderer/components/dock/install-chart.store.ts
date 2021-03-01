@@ -54,7 +54,7 @@ export class InstallChartStore extends DockTabStore<IChartInstallData> {
     const { repo, name, version } = this.getData(tabId);
 
     this.versions.clearData(tabId); // reset
-    const charts = await getChartDetails(repo, name, version);
+    const charts = await getChartDetails(repo, name, { version });
     const versions = charts.versions.map(chartVersion => chartVersion.version);
 
     this.versions.setData(tabId, versions);
