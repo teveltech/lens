@@ -1,7 +1,7 @@
 import semver from "semver";
 import { observable } from "mobx";
 import { autobind } from "../../utils";
-import { HelmChart, helmChartsApi } from "../../api/endpoints/helm-charts.api";
+import { getChartDetails, HelmChart, listCharts } from "../../api/endpoints/helm-charts.api";
 import { ItemStore } from "../../item.store";
 import flatten from "lodash/flatten";
 
@@ -15,7 +15,7 @@ export class HelmChartStore extends ItemStore<HelmChart> {
   @observable versions = observable.map<string, IChartVersion[]>();
 
   loadAll() {
-    return this.loadItems(() => helmChartsApi.list());
+    return this.loadItems(() => listCharts());
   }
 
   getByName(name: string, repo: string) {
@@ -35,13 +35,13 @@ export class HelmChartStore extends ItemStore<HelmChart> {
       return versions;
     }
 
-    const loadVersions = (repo: string) => {
-      return helmChartsApi.get(repo, chartName).then(({ versions }) => {
-        return versions.map(chart => ({
-          repo,
-          version: chart.getVersion()
-        }));
-      });
+    const loadVersions = async (repo: string) => {
+      const { versions } = await getChartDetails(repo, chartName);
+
+      return versions.map(chart => ({
+        repo,
+        version: chart.getVersion()
+      }));
     };
 
     if (!this.isLoaded) {
