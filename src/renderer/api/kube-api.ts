@@ -44,6 +44,11 @@ export interface IKubeApiQueryParams {
   fieldSelector?: string | string[]; // restrict list of objects by their fields, e.g. fieldSelector: "field=name"
 }
 
+export interface KubeApiListOptions {
+  namespace?: string;
+  reqInit?: RequestInit;
+}
+
 export interface IKubePreferredVersion {
   preferredVersion?: {
     version: string;
@@ -311,11 +316,11 @@ export class KubeApi<T extends KubeObject = any> {
     return data;
   }
 
-  async list({ namespace = "" } = {}, query?: IKubeApiQueryParams): Promise<T[]> {
+  async list({ namespace = "", reqInit }: KubeApiListOptions = {}, query?: IKubeApiQueryParams): Promise<T[]> {
     await this.checkPreferredVersion();
 
     return this.request
-      .get(this.getUrl({ namespace }), { query })
+      .get(this.getUrl({ namespace }), { query }, reqInit)
       .then(data => this.parseResponse(data, namespace));
   }
 
