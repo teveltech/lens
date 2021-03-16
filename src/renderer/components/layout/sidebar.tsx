@@ -46,7 +46,7 @@ export class Sidebar extends React.Component<Props> {
 
   renderCustomResources() {
     if (crdStore.isLoading) {
-      return <Spinner centerHorizontal/>;
+      return <Spinner centerHorizontal />;
     }
 
     return Object.entries(crdStore.groups).map(([group, crds]) => {
