@@ -5,7 +5,7 @@ export type KubeResource =
   "secrets" | "configmaps" | "ingresses" | "networkpolicies" | "persistentvolumeclaims" | "persistentvolumes" | "storageclasses" |
   "pods" | "daemonsets" | "deployments" | "statefulsets" | "replicasets" | "jobs" | "cronjobs" |
   "endpoints" | "customresourcedefinitions" | "horizontalpodautoscalers" | "podsecuritypolicies" | "poddisruptionbudgets" |
-  "role" | "clusterrole" | "rolebinding" | "clusterrolebinding" | "serviceaccount";
+  "roles" | "clusterroles" | "rolebindings" | "clusterrolebindings" | "serviceaccounts";
 
 export interface KubeApiResource extends KubeApiResourceData {
   apiName: KubeResource; // valid api resource name (e.g. "namespaces")
@@ -17,8 +17,8 @@ export interface KubeApiResourceData {
 }
 
 export const apiResourceRecord: Record<KubeResource, KubeApiResourceData> = {
-  "clusterrole": { kind: "ClusterRole", group: "rbac.authorization.k8s.io" },
-  "clusterrolebinding": { kind: "ClusterRoleBinding", group: "rbac.authorization.k8s.io" },
+  "clusterroles": { kind: "ClusterRole", group: "rbac.authorization.k8s.io" },
+  "clusterrolebindings": { kind: "ClusterRoleBinding", group: "rbac.authorization.k8s.io" },
   "configmaps": { kind: "ConfigMap" },
   "cronjobs": { kind: "CronJob", group: "batch" },
   "customresourcedefinitions": { kind: "CustomResourceDefinition", group: "apiextensions.k8s.io" },
@@ -40,10 +40,10 @@ export const apiResourceRecord: Record<KubeResource, KubeApiResourceData> = {
   "podsecuritypolicies": { kind: "PodSecurityPolicy" },
   "resourcequotas": { kind: "ResourceQuota" },
   "replicasets": { kind: "ReplicaSet", group: "apps" },
-  "role": { kind: "Role", group: "rbac.authorization.k8s.io" },
-  "rolebinding": { kind: "RoleBinding", group: "rbac.authorization.k8s.io" },
+  "roles": { kind: "Role", group: "rbac.authorization.k8s.io" },
+  "rolebindings": { kind: "RoleBinding", group: "rbac.authorization.k8s.io" },
   "secrets": { kind: "Secret" },
-  "serviceaccount": { kind: "ServicAccount", group: "core" },
+  "serviceaccounts": { kind: "ServiceAccount", group: "core" },
   "services": { kind: "Service" },
   "statefulsets": { kind: "StatefulSet", group: "apps" },
   "storageclasses": { kind: "StorageClass", group: "storage.k8s.io" },
