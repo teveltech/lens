@@ -16,7 +16,7 @@ export class UserManagement extends React.Component {
     const query = namespaceUrlParam.toObjectParam();
     const tabRoutes: TabLayoutRoute[] = [];
 
-    if (isAllowedResource("serviceaccount")) {
+    if (isAllowedResource("serviceaccounts")) {
       tabRoutes.push({
         title: "Service Accounts",
         component: ServiceAccounts,
@@ -25,7 +25,7 @@ export class UserManagement extends React.Component {
       });
     }
 
-    if (isAllowedResource("rolebinding") || isAllowedResource("clusterrolebinding")) {
+    if (isAllowedResource("rolebindings") || isAllowedResource("clusterrolebindings")) {
       // TODO: seperate out these two pages
       tabRoutes.push({
         title: "Role Bindings",
@@ -35,7 +35,7 @@ export class UserManagement extends React.Component {
       });
     }
 
-    if (isAllowedResource("role") || isAllowedResource("clusterrole")) {
+    if (isAllowedResource("roles") || isAllowedResource("clusterroles")) {
       // TODO: seperate out these two pages
       tabRoutes.push({
         title: "Roles",
