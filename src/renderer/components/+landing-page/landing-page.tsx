@@ -31,7 +31,7 @@ export class LandingPage extends React.Component {
   }
 
   render() {
-    const showBackButton = this.workspaceClusters.length > 0;
+    const showBackButton = Boolean(this.workspace.activeClusterId);
     const header = <><Icon svg="logo-lens" big /> <h2>{this.workspace.name}</h2></>;
 
     return (
