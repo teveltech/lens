@@ -11,12 +11,11 @@ import migrations from "../migrations/workspace-store";
 
 export type WorkspaceId = string;
 
-export class InvarientError extends Error {}
+export class InvariantError extends Error {}
 
 export interface WorkspaceStoreModel {
   workspaces: WorkspaceModel[];
   currentWorkspace?: WorkspaceId;
-  seenWorkspaces?: WorkspaceId[];
 }
 
 export interface WorkspaceModel {
@@ -124,7 +123,7 @@ export class Workspace implements WorkspaceModel, WorkspaceState {
    */
   private resolveClusterOrId(clusterOrId: ClusterId | Cluster): Cluster {
     if (!clusterOrId) {
-      throw new InvarientError("Must provide a Cluster or a ClusterId");
+      throw new InvariantError("Must provide a Cluster or a ClusterId");
     }
 
     const cluster = typeof clusterOrId === "string"
@@ -132,11 +131,11 @@ export class Workspace implements WorkspaceModel, WorkspaceState {
       : clusterOrId;
 
     if (!cluster) {
-      throw new InvarientError(`ClusterId ${clusterOrId} is invalid`);
+      throw new InvariantError(`ClusterId ${clusterOrId} is invalid`);
     }
 
     if (cluster.workspace !== this.id) {
-      throw new InvarientError(`Cluster ${cluster.name} is not in Workspace ${this.name}`);
+      throw new InvariantError(`Cluster ${cluster.name} is not in Workspace ${this.name}`);
     }
 
     return cluster;
@@ -164,24 +163,18 @@ export class Workspace implements WorkspaceModel, WorkspaceState {
    * @param clusterOrId the cluster instance or its ID
    * @returns true if it matches the `activeClusterId` (and is thus cleared) else false
    */
-  @action tryClearAsCurrentActiveCluster(clusterOrId: ClusterId | Cluster): boolean {
-    if (typeof clusterOrId === "string") {
-      if (this.activeClusterId === clusterOrId) {
-        this.clearActiveCluster();
+  @action tryClearAsActiveCluster(clusterOrId: ClusterId | Cluster): boolean {
+    const clusterId = typeof clusterOrId === "string"
+      ? clusterOrId
+      : clusterOrId.id;
 
-        return true;
-      }
+    const clearActive = this.activeClusterId === clusterId;
 
-      return false;
-    }
-
-    if (this.activeClusterId === clusterOrId.id) {
+    if (clearActive) {
       this.clearActiveCluster();
-
-      return true;
     }
 
-    return false;
+    return clearActive;
   }
 
   @action clearActiveCluster() {
@@ -241,12 +234,6 @@ export class WorkspaceStore extends BaseStore<WorkspaceStoreModel> {
   private static stateRequestChannel = "workspace:states";
 
   @observable currentWorkspaceId = WorkspaceStore.defaultId;
-
-  #seenWorkspaces = observable.set<WorkspaceId>();
-
-  get seenWorkspaces(): WorkspaceId[] {
-    return Array.from(this.#seenWorkspaces.values());
-  }
 
   @observable workspaces = observable.map<WorkspaceId, Workspace>();
 
@@ -343,31 +330,6 @@ export class WorkspaceStore extends BaseStore<WorkspaceStoreModel> {
     return this.currentWorkspaceId === workspaceId;
   }
 
-  /**
-   * Checks to see if the workspace has been to the overview page before
-   * @param workspaceOrId The workspace or its ID
-   * @returns true if the given workspace has been to the overview page before
-   */
-  hasBeenSeen(workspaceOrId: Workspace | WorkspaceId): boolean {
-    const workspaceId = typeof workspaceOrId === "string"
-      ? workspaceOrId
-      : workspaceOrId.id;
-
-    return this.#seenWorkspaces.has(workspaceId);
-  }
-
-  /**
-   * Marks the given workspace as having visited the overview page
-   * @param workspaceOrId The workspace or its ID
-   */
-  markSeen(workspaceOrId: Workspace | WorkspaceId): void {
-    const workspaceId = typeof workspaceOrId === "string"
-      ? workspaceOrId
-      : workspaceOrId.id;
-
-    this.#seenWorkspaces.add(workspaceId);
-  }
-
   getById(id: WorkspaceId): Workspace {
     return this.workspaces.get(id);
   }
@@ -439,12 +401,12 @@ export class WorkspaceStore extends BaseStore<WorkspaceStoreModel> {
    * Attempts to clear `cluster` as the `activeCluster` from its own workspace
    * @returns true if the cluster was previously the active one for its workspace
    */
-  tryClearAsWorkspaceActiveCluster(cluster: Cluster): boolean {
-    return this.getById(cluster.workspace).tryClearAsCurrentActiveCluster(cluster);
+  tryClearAsActiveCluster(cluster: Cluster): boolean {
+    return this.getById(cluster.workspace).tryClearAsActiveCluster(cluster);
   }
 
   @action
-  protected fromStore({ currentWorkspace, workspaces = [], seenWorkspaces = [] }: WorkspaceStoreModel) {
+  protected fromStore({ currentWorkspace, workspaces = [] }: WorkspaceStoreModel) {
     if (currentWorkspace) {
       this.currentWorkspaceId = currentWorkspace;
     }
@@ -470,15 +432,12 @@ export class WorkspaceStore extends BaseStore<WorkspaceStoreModel> {
         this.workspaces.delete(workspaceId);
       }
     }
-
-    this.#seenWorkspaces.replace(seenWorkspaces);
   }
 
   toJSON(): WorkspaceStoreModel {
     return toJS({
       currentWorkspace: this.currentWorkspaceId,
       workspaces: this.workspacesList.map((w) => w.toJSON()),
-      seenWorkspaces: this.seenWorkspaces,
     }, {
       recurseEverything: true
     });

@@ -116,7 +116,7 @@ describe("Workspace tests", () => {
         activeClusterId: "foobar"
       });
 
-      expect(w.tryClearAsCurrentActiveCluster("fa")).toBe(false);
+      expect(w.tryClearAsActiveCluster("fa")).toBe(false);
       expect(w.activeClusterId).toBe("foobar");
     });
     it("should return false for non-matching cluster", () => {
@@ -135,7 +135,7 @@ describe("Workspace tests", () => {
         activeClusterId: "foobar"
       });
 
-      expect(w.tryClearAsCurrentActiveCluster({ id: "fa" } as Cluster)).toBe(false);
+      expect(w.tryClearAsActiveCluster({ id: "fa" } as Cluster)).toBe(false);
       expect(w.activeClusterId).toBe("foobar");
     });
 
@@ -155,7 +155,7 @@ describe("Workspace tests", () => {
         activeClusterId: "foobar"
       });
 
-      expect(w.tryClearAsCurrentActiveCluster("foobar")).toBe(true);
+      expect(w.tryClearAsActiveCluster("foobar")).toBe(true);
       expect(w.activeClusterId).toBe(undefined);
     });
 
@@ -175,7 +175,7 @@ describe("Workspace tests", () => {
         activeClusterId: "foobar"
       });
 
-      expect(w.tryClearAsCurrentActiveCluster({ id: "foobar"} as Cluster)).toBe(true);
+      expect(w.tryClearAsActiveCluster({ id: "foobar"} as Cluster)).toBe(true);
       expect(w.activeClusterId).toBe(undefined);
     });
   });

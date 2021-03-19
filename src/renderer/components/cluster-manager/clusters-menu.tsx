@@ -60,7 +60,7 @@ export class ClustersMenu extends React.Component<Props> {
       menu.append(new MenuItem({
         label: `Disconnect`,
         click: async () => {
-          if (workspaceStore.tryClearAsWorkspaceActiveCluster(cluster)) {
+          if (workspaceStore.tryClearAsActiveCluster(cluster)) {
             navigate(landingURL());
           }
 

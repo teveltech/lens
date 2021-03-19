@@ -261,7 +261,7 @@ export class ClusterStore extends BaseStore<ClusterStoreModel> {
     const cluster = this.getById(clusterId);
 
     if (cluster) {
-      workspaceStore.getById(cluster.workspace)?.tryClearAsCurrentActiveCluster(cluster);
+      workspaceStore.getById(cluster.workspace)?.tryClearAsActiveCluster(cluster);
       this.clusters.delete(clusterId);
 
       // remove only custom kubeconfigs (pasted as text)
