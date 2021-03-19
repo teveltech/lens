@@ -10,10 +10,10 @@ import { Notifications } from "../notifications";
 import { Icon } from "../icon";
 import { createStorage } from "../../utils";
 
+export const landingPageStorage = createStorage<WorkspaceId[]>("landing_page", []);
+
 @observer
 export class LandingPage extends React.Component {
-  private static storage = createStorage<WorkspaceId[]>("landing_page", []);
-
   @computed get workspace() {
     return workspaceStore.currentWorkspace;
   }
@@ -23,9 +23,9 @@ export class LandingPage extends React.Component {
   }
 
   componentDidMount() {
-    const workspacesSeen = new Set(LandingPage.storage.get());
+    const workspacesSeen = new Set(landingPageStorage.get());
 
-    if (!workspacesSeen.has(this.workspace.id) && this.workspaceClusters.length === 0) {
+    if (!workspacesSeen.has(this.workspace.id) && this.workspaceClusters.length === 0 && !this.workspace.isManaged) {
       Notifications.info(<><b>Welcome!</b><p>Get started by associating one or more clusters to Lens</p></>, {
         timeout: 30_000,
         id: "landing-welcome"
@@ -33,7 +33,7 @@ export class LandingPage extends React.Component {
     }
 
     workspacesSeen.add(this.workspace.id);
-    LandingPage.storage.set(Array.from(workspacesSeen));
+    landingPageStorage.set(Array.from(workspacesSeen));
   }
 
   render() {

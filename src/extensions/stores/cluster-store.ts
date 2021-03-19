@@ -21,7 +21,7 @@ export class ClusterStore extends Singleton {
    * @deprecated use `workspaceStore.currentWorkspace.activeClusterId`
    */
   get activeClusterId(): string {
-    console.warn("get Store.ClusterStore.activeClusterId is deprecated. Use workspace.activeCluster");
+    console.warn("get Store.ClusterStore.activeClusterId is deprecated. Use workspace..currentWorkspace.activeClusterId");
 
     return internalWorkspaceStore.currentWorkspace.activeClusterId;
   }

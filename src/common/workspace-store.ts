@@ -8,6 +8,7 @@ import logger from "../main/logger";
 import type { ClusterId } from "./cluster-store";
 import { Cluster } from "../main/cluster";
 import migrations from "../migrations/workspace-store";
+import { landingPageStorage } from "../renderer/components/+landing-page";
 
 export type WorkspaceId = string;
 
@@ -380,6 +381,7 @@ export class WorkspaceStore extends BaseStore<WorkspaceStoreModel> {
   @action
   removeWorkspaceById(id: WorkspaceId) {
     const workspace = this.getById(id);
+    const landingPageSeen = new Set(landingPageStorage.get());
 
     if (!workspace) return;
 
@@ -392,6 +394,9 @@ export class WorkspaceStore extends BaseStore<WorkspaceStoreModel> {
     }
 
     this.workspaces.delete(id);
+    landingPageSeen.delete(id);
+    landingPageStorage.set(Array.from(landingPageSeen));
+
     appEventBus.emit({name: "workspace", action: "remove"});
     clusterStore.removeByWorkspaceId(id);
   }
