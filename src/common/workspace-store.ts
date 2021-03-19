@@ -154,7 +154,7 @@ export class Workspace implements WorkspaceModel, WorkspaceState {
         this.#activeClusterId.set(this.resolveClusterOrId(clusterOrId).id);
       }
     } catch (error) {
-      logger.error("[WORKSPACE]: activeClusterId was attempted to be set to an invalid value", { clusterOrId, workspaceName: this.name });
+      logger.error("[WORKSPACE]: activeClusterId was attempted to be set to an invalid value", { error, workspaceName: this.name });
     }
   }
 
