@@ -4,7 +4,7 @@
 ## Install
 Prerequisites: Nodejs ^v12, make, yarn
 ```
-git clone https://github.com/teveltech/lens.git ~/workspace/lens
+git clone https://github.com/teveltech/lens.git ~/workspace/lens --depth 1
 cd ~/workspace/lens
 npm run build:linux
 ``` 
