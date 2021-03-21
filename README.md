@@ -2,23 +2,23 @@
 # TEVEL
 
 ## Install
+Prerequisites: Nodejs ^v12, make, yarn
 ```
 git clone https://github.com/teveltech/lens.git ~/workspace/lens
 cd ~/workspace/lens
 npm run build:linux
 ``` 
 
-add to path:
+#### Add to path
 ~/workspace/lens/dist/linux-unpacked/kontena-lens
 
-* make sure to replace the original lens if installed.
-
-for example: run this to overwrite the original shortcut:
+- make sure to replace the original lens if installed.
+- for example, run this to overwrite the original shortcut (installed with snap):
 ```
-sudo ln -s ~/workspace/lens/dist/linux-unpacked/kontena-lens kontena-lens -f
+sudo ln -s ~/workspace/lens/dist/linux-unpacked/kontena-lens /snap/bin/kontena-lens -f
 ``` 
 
-### copy previous config files to the new lens:
+#### Optional - copy previous clusters to the new lens
 ```
 sudo cp ~/snap/kontena-lens/current/.config/Lens/kubeconfigs/* ~/.config/Lens/kubeconfigs
 sudo chown -R $(whoami):$(whoami) ~/.config/Lens/kubeconfigs/*
