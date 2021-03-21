@@ -1,3 +1,25 @@
+
+# TEVEL
+
+## Install
+```
+git clone https://github.com/teveltech/lens.git ~/workspace/lens
+cd ~/workspace/lens
+npm run build:linux
+``` 
+
+add to path:
+~/workspace/lens/dist/linux-unpacked/kontena-lens
+
+* make sure to replace the original lens if installed.
+
+for example: run this to overwrite the original shortcut:
+```
+sudo ln -s ~/workspace/lens/dist/linux-unpacked/kontena-lens kontena-lens -f
+``` 
+
+
+
 # Lens | The Kubernetes IDE
 
 [![Build Status](https://dev.azure.com/lensapp/lensapp/_apis/build/status/lensapp.lens?branchName=master)](https://dev.azure.com/lensapp/lensapp/_build/latest?definitionId=1&branchName=master)
