@@ -47,7 +47,6 @@
     "bundledHelmVersion": "3.4.2"
   },
   "engines": {
-    "node": ">=12 <13"
   },
   "jest": {
     "collectCoverage": false,

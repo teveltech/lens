@@ -29,6 +29,7 @@ import { LensProtocolRouterMain } from "./protocol-handler";
 import { getAppVersion, getAppVersionFromProxyServer } from "../common/utils";
 import { bindBroadcastHandlers } from "../common/ipc";
 import { startUpdateChecking } from "./app-updater";
+import { exec } from "child_process";
 
 const workingDir = path.join(app.getPath("appData"), appName);
 let proxyPort: number;
@@ -110,6 +111,33 @@ app.on("ready", async () => {
     extensionsStore.load(),
     filesystemProvisionerStore.load(),
   ]);
+
+  ipcMain.on("test", (e, data) => {
+    if (!data) {
+      return;
+    }
+    console.log("DATA", data);
+    const payload = data.payload;
+    const response = {
+      err: 0,
+      errors: [] as string[],
+      msg: "" as string,
+    };
+    exec(`sshpass -p '${payload.sshPassword}' ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${payload.sshAddress} 'cat /etc/rancher/k3s/k3s.yaml'`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        response.err = 1;
+        response.errors.push(error.toString());
+        e.reply("test", JSON.stringify(response));
+      } else {
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+        response.msg = stdout.replace("127.0.0.1", payload.sshAddress.split("@")[1]);
+        e.reply("test", JSON.stringify(response));
+      }
+    });
+    // e.reply("ok");
+  });
 
   // find free port
   try {

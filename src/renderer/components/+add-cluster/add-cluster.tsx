@@ -3,7 +3,7 @@ import os from "os";
 import React from "react";
 import { observer } from "mobx-react";
 import { action, observable, runInAction } from "mobx";
-import { remote } from "electron";
+import {ipcRenderer, remote} from "electron";
 import { KubeConfig } from "@kubernetes/client-node";
 import { Select, SelectOption } from "../select";
 import { DropFileInput, Input } from "../input";
@@ -18,7 +18,7 @@ import { navigate } from "../../navigation";
 import { userStore } from "../../../common/user-store";
 import { clusterViewURL } from "../cluster-manager/cluster-view.route";
 import { cssNames } from "../../utils";
-import { Notifications } from "../notifications";
+import {Notifications, notificationsStore} from "../notifications";
 import { Tab, Tabs } from "../tabs";
 import { ExecValidationNotFoundError } from "../../../common/custom-errors";
 import { appEventBus } from "../../../common/event-bus";
@@ -27,7 +27,13 @@ import { docsUrl } from "../../../common/vars";
 
 enum KubeConfigSourceTab {
   FILE = "file",
-  TEXT = "text"
+  TEXT = "text",
+  SSH = "ssh"
+}
+
+function sendToBackchannel(backchannel: string, notificationId: string, data: any): void {
+  notificationsStore.remove(notificationId);
+  ipcRenderer.send(backchannel, data);
 }
 
 @observer
@@ -44,10 +50,29 @@ export class AddCluster extends React.Component {
   @observable isWaiting = false;
   @observable showSettings = false;
 
+  @observable sshAddress = "user@address";
+  @observable sshPassword = "password";
+
+
+
   componentDidMount() {
     clusterStore.setActive(null);
     this.setKubeConfig(userStore.kubeConfigPath);
     appEventBus.emit({ name: "cluster-add", action: "start" });
+
+    ipcRenderer.on("test", (e, response) => {
+      console.log(response);
+      const res = JSON.parse(response);
+
+      if (res.err == 0) {
+        this.sourceTab = KubeConfigSourceTab.TEXT;
+        this.customConfig = res.msg;
+      } else {
+        Notifications.error(
+          <div>Can&apos;t get kubeconfig: <code>{res.errors.join(", ")}</code></div>
+        );
+      }
+    });
   }
 
   componentWillUnmount() {
@@ -94,6 +119,10 @@ export class AddCluster extends React.Component {
           this.error = String(err);
         }
         break;
+      case KubeConfigSourceTab.SSH:
+
+        // this.kubeContexts.replace(contexts);
+        break;
     }
 
     if (this.kubeContexts.size === 1) {
@@ -128,6 +157,15 @@ export class AddCluster extends React.Component {
   onDropKubeConfig = (files: File[]) => {
     this.sourceTab = KubeConfigSourceTab.FILE;
     this.setKubeConfig(files[0].path);
+  };
+
+  @action
+  getKubeConfig = () => {
+    // this.isWaiting = true;
+    sendToBackchannel("test", "test", { payload: {
+      sshAddress: this.sshAddress,
+      sshPassword: this.sshPassword,
+    }});
   };
 
   @action
@@ -229,6 +267,11 @@ export class AddCluster extends React.Component {
             label="Paste as text"
             active={this.sourceTab == KubeConfigSourceTab.TEXT}
           />
+          <Tab
+            value={KubeConfigSourceTab.SSH}
+            label="paste ssh & pass"
+            active={this.sourceTab == KubeConfigSourceTab.SSH}
+          />
         </Tabs>
         {this.sourceTab === KubeConfigSourceTab.FILE && (
           <div>
@@ -272,6 +315,39 @@ export class AddCluster extends React.Component {
             />
             <small className="hint">
               Pro-Tip: paste kubeconfig to get available contexts
+            </small>
+          </div>
+        )}
+        {this.sourceTab === KubeConfigSourceTab.SSH && (
+          <div className="flex column">
+            <Input
+              theme="round-black"
+              className="kube-config-path box grow"
+              value={this.sshAddress}
+              onChange={v => this.sshAddress = v}
+            />
+            <Input
+              type="password"
+              theme="round-black"
+              className="kube-config-path box grow"
+              value={this.sshPassword}
+              onChange={v => this.sshPassword = v}
+            />
+            <br/>
+            <div className="actions-panel">
+              <Button
+                primary
+                label="Get KUBECONFIG"
+                onClick={this.getKubeConfig}
+                waiting={this.isWaiting}
+              />
+            </div>
+
+            <br/>
+            <br/>
+            <br/>
+            <small className="hint">
+              Pro-Tip: use Itzik computer
             </small>
           </div>
         )}
