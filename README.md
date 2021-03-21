@@ -6,6 +6,7 @@ Prerequisites: Nodejs ^v12, make, yarn
 ```
 git clone https://github.com/teveltech/lens.git ~/workspace/lens --depth 1
 cd ~/workspace/lens
+yarn
 npm run build:linux
 ``` 
 
