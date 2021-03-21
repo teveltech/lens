@@ -18,6 +18,13 @@ for example: run this to overwrite the original shortcut:
 sudo ln -s ~/workspace/lens/dist/linux-unpacked/kontena-lens kontena-lens -f
 ``` 
 
+### copy previous config files to the new lens:
+```
+sudo cp ~/snap/kontena-lens/current/.config/Lens/kubeconfigs/* ~/.config/Lens/kubeconfigs
+sudo chown -R $(whoami):$(whoami) ~/.config/Lens/kubeconfigs/*
+node copy-old-clusters.js
+``` 
+
 
 
 # Lens | The Kubernetes IDE
